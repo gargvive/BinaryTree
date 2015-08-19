@@ -494,14 +494,10 @@ int main()
   root->left->right = newNode(5);
   root->right->left  = newNode(1);
   root->right->right = newNode(30);
-  //root->left->right = newNode(5); 
-   // root->right->right->right = newNode(13);
+  
     cout<<"Before Any change\n";
     levelorder(root);
  	btToChildSumTree(root);
 	cout<<endl<<"After Change\n";
  	levelorder(root);
- 	//
- 	//btToMirrorBT(root);
- 	//inorder(root);
 }
