@@ -72,11 +72,81 @@ void postorder(node<T>* root)
 	cout<<root->data<<"  ";
 }
 
+template <typename T>
+void preorder(node<T>* root)
+{
+	if(!root) return;
+	cout<<root->data<<"  ";
+	postorder(root->left);
+	postorder(root->right);
+}
 
+// Construct Special Binary Tree from given Inorder traversal
+
+/*Given Inorder Traversal of a Special Binary Tree in which key of every node is 
+greater than keys in left and right children, construct the Binary Tree and return root.*/
+
+template <typename T>
+int findMaximum(T* in,int s,int e){
+	int maxi = in[s];
+	int index = s;
+	for(int i=s+1;i<=e;i++){
+		if(maxi<in[i]){
+			maxi = in[i];
+			index = i;
+		}
+	}
+	return index;
+}
+
+template <typename T>
+node<T>* SpecialBTFormation(T* in,int inS,int inE){
+
+	if(inS>inE) return NULL;
+	int maxIndex  = findMaximum(in,inS,inE);
+	node<T>* root = newNode(in[maxIndex]);
+	if(inS==inE) return root;
+	root->left = SpecialBTFormation(in,inS,maxIndex-1);
+	root->right = SpecialBTFormation(in,maxIndex+1,inE);
+	return root;
+}
+
+// Construct Full Binary Tree from given preorder and postorder traversals
+
+template <typename T>
+int searchIndexInPost(T* post,int tofind,int s,int e){
+	for(int i=s;i<=e;i++){
+		if(post[i]==tofind) return i;	
+	}
+
+}
+
+template <typename T>
+node<T>* prePostToFullBT(T* pre,T* post,int postS,int postE,int n)
+{
+	static int preI = 0;
+	if(preI==n+1 || postS>postE ) return NULL;
+	node<T>* root = newNode(pre[preI++]);
+	if(postS==postE) return root;
+	int index = searchIndexInPost(post,pre[preI],postS,postE);
+	root->left = prePostToFullBT(pre,post,postS,index,n);
+	root->right = prePostToFullBT(pre,post,index+1,postE-1,n);
+
+	return root;
+}
 
 int main()
 {
-  char in[] = {'D', 'B', 'E', 'A', 'F', 'C'};
-  char pre[] = {'A', 'B', 'D', 'E', 'C', 'F'};
-  postorder(inPreToTree(in,pre,0,5,5));
+  //char in[] = {'D', 'B', 'E', 'A', 'F', 'C'};
+  //char pre[] = {'A', 'B', 'D', 'E', 'C', 'F'};
+  //postorder(inPreToTree(in,pre,0,5,5));
+
+	int pre[]={1, 2, 4, 8, 9, 5, 3, 6, 7};
+	int post[] = {8, 9, 4, 5, 2, 6, 7, 3, 1};
+	inorder(prePostToFullBT(pre,post,0,8,8));
+
+  int ino[] = {5, 10, 40, 30, 28};
+  cout<<endl;
+  node<int>* root = SpecialBTFormation(ino,0,4);
+  //inorder(root);
 }
