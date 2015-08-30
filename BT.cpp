@@ -484,20 +484,158 @@ void btToChildSumTree(node* root)
 	}
 }
 
+// Diameter of a binary tree
+
+int diameter(node* root){
+
+	if(root==NULL) return 0;
+	if(root->left==NULL && root->right==NULL) return 1;
+	int left = diameter(root->left);
+	int right = diameter(root->right);
+
+	int lheight = height(root->left);
+	int rheight = height(root->right);
+
+	return max(max(left,right),1+lheight+rheight);
+}
+
+
+//Optimized Version Of Diameter ...Complexity O(n)
+
+int lheight=0;
+int rheight = 0;
+int dia(node* root,int* height){
+
+	if(root==NULL) {
+		*height = 0;
+		return 0;
+	}
+
+	int left = dia(root->left,&lheight);
+	int right = dia(root->right,&rheight);
+
+	*height = max(lheight,rheight)+1;
+
+	//TODO
+}
+
+
+//How to determine if a binary tree is height-balanced?
+
+bool isheightBalanced(node* root,int *height)
+{
+	if(!root) return true;
+	int lheight = 0, rheight = 0;
+	bool left = isheightBalanced(root->left,&lheight);
+	bool right = isheightBalanced(root->right,&rheight);
+
+	*height = max(lheight,rheight)+1;
+
+	return left && right && (abs(lheight-rheight)==1 || abs(lheight-rheight)==0); 
+}
+
+
+//Root to leaf path sum equal to a given number
+
+bool rootToLeafEqualToSum(node* root,int sum,int curr)
+{
+	
+	if(root==NULL) return false;
+	curr+=root->data;
+	if(!root->left && !root->right) {
+		cout<<curr<<endl;
+		if(curr == sum ) return true;
+		else return false;
+	}
+
+	return rootToLeafEqualToSum(root->left,sum,curr) || rootToLeafEqualToSum(root->right,sum,curr);
+
+	return false;
+}
+
+void treeToDoubleTree(node* root)
+{
+	if(root==NULL) return ;
+
+	
+		node* newN = newNode(root->data);
+		node* left = root->left;
+		root->left = newN;
+		newN->left = left;
+		treeToDoubleTree(left);
+		treeToDoubleTree(root->right);
+}
+
+bool isfoldableUtil(node* root1, node* root2)
+{
+	if((root1 && !root2)||(root2 && !root1)) return false;
+	else if(!root1 && ! root2) return true;
+
+	return isfoldableUtil(root1->left,root2->right) && isfoldableUtil(root1->right,root2->left); 
+}
+
+
+bool isfoldable(node* root)
+{
+	return isfoldableUtil(root->left,root->right);
+}
+
+// Inorder Preorder to tree
+
+int findIndexInInorder(int* in, int tofind, int n){
+
+	for(int i=0;i<n;i++){
+		if(in[i]==tofind) return i;
+	}
+}
+
+node* inPreToTree(int* in,int* pre,int inS,int inE,int n){
+
+	static int preIndex = 0;
+	
+	if(preIndex==n+1) return NULL;
+	node* root = newNode(pre[preIndex++]);
+	
+	if(inS>=inE) return root;
+
+	
+	int index = findIndexInInorder(in,root->data,n);
+
+	root->left = inPreToTree(in,pre,inS,index-1,n);
+	root->right = inPreToTree(in,pre,index+1,inE,n);
+
+	return root;
+}
+
+void postorder(node* root)
+{
+	if(!root) return;
+	postorder(root->left);
+	postorder(root->right);
+	cout<<root->data<<"  ";
+}
+
 int main()
 {
 	
-  node *root = newNode(50);
-  root->left        = newNode(7);
-  root->right       = newNode(2);
-  root->left->left  = newNode(3);
-  root->left->right = newNode(5);
-  root->right->left  = newNode(1);
-  root->right->right = newNode(30);
-  
-    cout<<"Before Any change\n";
-    levelorder(root);
- 	btToChildSumTree(root);
-	cout<<endl<<"After Change\n";
- 	levelorder(root);
+  node *root = newNode(1);
+  root->left        = newNode(2);
+  root->right       = newNode(3);
+  root->left->right  = newNode(4);
+  root->right->left = newNode(5);
+  root->right->right = newNode(6);
+    //cout<<"Before Any change\n";
+    ///levelorder(root);
+ 	//btToChildSumTree(root);
+	//cout<<endl<<"After Change\n";
+ 	//levelorder(root);
+  	//if(isfoldable(root)) cout<<"Yes\n";
+  	//else cout<<"No\n";
+
+  int in[]= {4,2,5,1,6,3};
+  int pre[]={1,2,4,5,3,6};
+  node* root1 = inPreToTree(in,pre,0,5,5);
+  inorder(root1);
+  cout<<endl;
+  postorder(root1);
 }
